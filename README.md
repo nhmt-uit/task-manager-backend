@@ -3,6 +3,7 @@
 Backend API for a simple task management system built with Node.js, Express and MongoDB.
 
 ## Tech Stack
+
 - Node.js
 - Express
 - MongoDB + Mongoose
@@ -11,12 +12,27 @@ Backend API for a simple task management system built with Node.js, Express and 
 ## API Endpoints
 
 ### Register User
+
 **POST** `/api/users/register`
 
 Request body:
-```json
+
+````json
 {
   "name": "Test User",
   "email": "test@example.com",
   "password": "123456"
 }
+
+### Login
+
+**POST** `/api/users/login`
+
+Request body:
+
+```json
+{
+  "email": "test@example.com",
+  "password": "123456"
+}
+
