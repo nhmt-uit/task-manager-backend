@@ -1,16 +1,23 @@
 const express = require("express");
 const router = express.Router();
 
-const { registerUser, loginUser } = require("../controllers/userController");
+const { protect } = require("../middleware/authMiddleware");
+const {
+  registerUser,
+  loginUser,
+  getMe,
+} = require("../controllers/userController");
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 
-const { protect } = require('../middleware/authMiddleware');
+// ================================= //
+// Easy way to use "protect"
+// router.get("/me", protect, getMe);
 
-router.get('/me', protect, (req, res) => {
-  res.json(req.user);
-});
-
+// ================================= //
+// Router need to login
+router.use(protect);
+router.get("/me", getMe);
 
 module.exports = router;

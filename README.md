@@ -17,22 +17,33 @@ Backend API for a simple task management system built with Node.js, Express and 
 
 Request body:
 
-````json
+```json
 {
   "name": "Test User",
   "email": "test@example.com",
   "password": "123456"
 }
+```
+
+### Protected Route
+
+- Header:
 
 ### Login
 
-**POST** `/api/users/login`
+- **URL**: `/api/users/login`
+- **Method**: POST
+- **Response**: JWT token
 
-Request body:
+### Create Task
 
-```json
-{
-  "email": "test@example.com",
-  "password": "123456"
-}
+- **URL**: `/api/tasks`
+- **Method**: POST
+- **Auth**: Bearer Token
 
+### Get Tasks
+
+- **URL**: `/api/tasks`
+- **Method**: GET
+- **Auth**: Bearer Token
+- **Description**: Get task list of logged-in user
