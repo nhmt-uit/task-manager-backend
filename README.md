@@ -47,3 +47,9 @@ Request body:
 - **Method**: GET
 - **Auth**: Bearer Token
 - **Description**: Get task list of logged-in user
+
+### Update Task
+- **URL**: `/api/tasks/:id`
+- **Method**: PUT
+- **Auth**: Bearer Token
+- **Description**: Update task if owner

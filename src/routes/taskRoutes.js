@@ -1,6 +1,14 @@
 const express = require("express");
-const { createTask, getTasks } = require("../controllers/taskController");
+const Task = require("../models/Task");
+const {
+  createTask,
+  getTasks,
+  updateTask,
+  updateTaskStatus,
+  deleteTask
+} = require("../controllers/taskController");
 const { protect } = require("../middleware/authMiddleware");
+const { checkOwnership } = require("../middleware/ownershipMiddleware");
 
 const router = express.Router();
 
@@ -8,5 +16,8 @@ const router = express.Router();
 // Easy way to use "protect"
 router.post("/", protect, createTask);
 router.get("/", protect, getTasks);
+router.put("/:id", protect, checkOwnership(Task), updateTask);
+router.patch("/:id/status", protect, checkOwnership(Task, 'user'), updateTaskStatus);
+router.delete("/:id", protect, checkOwnership(Task, 'user'), deleteTask);
 
 module.exports = router;
