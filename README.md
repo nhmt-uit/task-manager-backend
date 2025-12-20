@@ -53,3 +53,12 @@ Request body:
 - **Method**: PUT
 - **Auth**: Bearer Token
 - **Description**: Update task if owner
+
+### Get Tasks (Pagination & Filter)
+- **URL**: `/api/tasks`
+- **Method**: GET
+- **Query params**:
+  - `page`
+  - `limit`
+  - `status`
+  - `keyword`

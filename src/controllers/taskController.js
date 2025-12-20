@@ -23,13 +23,44 @@ const createTask = async (req, res) => {
 
 const getTasks = async (req, res) => {
   try {
-    const tasks = await Task.find({ user: req.user._id })
-      .select("title status createdAt")
-      .sort({
-        createdAt: -1,
-      });
+    // const tasks = await Task.find({ user: req.user._id })
+    //   .select("title status createdAt")
+    //   .sort({
+    //     createdAt: -1,
+    //   });
 
-    res.json(tasks);
+    // res.json(tasks);
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const { status, keyword } = req.query;
+
+    const query = { user: req.user._id };
+
+    if (status) {
+      query.status = status;
+    }
+
+    if (keyword) {
+      query.title = { $regex: keyword, $options: "i" };
+    }
+
+    const [tasks, total] = await Promise.all([
+      Task.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Task.countDocuments(query),
+    ]);
+
+    res.json({
+      data: tasks,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
