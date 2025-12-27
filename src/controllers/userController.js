@@ -69,8 +69,42 @@ const registerUser = async (req, res) => {
 };
 
 const getMe = (req, res) => {
-    console.log("getME", req.user)
+  console.log("getME", req.user);
   res.json(req.user);
+};
+
+const getUsers = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const { email } = req.query;
+
+    const query = { user: req.user._id };
+
+    if (email) {
+      query.email = { $regex: email, $options: "i" };
+    }
+
+    const [users, total] = await Promise.all([
+      User.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      User.countDocuments(query),
+    ]);
+
+    res.json({
+      data: users,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 module.exports = { loginUser, registerUser, getMe };
