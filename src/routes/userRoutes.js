@@ -6,10 +6,12 @@ const {
   registerUser,
   loginUser,
   getMe,
+  refreshToken
 } = require("../controllers/userController");
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
+router.post("/refresh-token", refreshToken);
 
 // ================================= //
 // Easy way to use "protect"

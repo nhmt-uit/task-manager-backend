@@ -6,7 +6,6 @@ const connectDB = async () => {
     console.log("MongoDB connected!");
   } catch (error) {
     console.error("MongoDB connection failed!", error);
-    console.error("MONGO_URI: ", process.env.MONGO_URI);
     process.exit(1);
   }
 };

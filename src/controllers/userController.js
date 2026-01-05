@@ -68,6 +68,34 @@ const registerUser = async (req, res) => {
   }
 };
 
+const refreshToken = async (req, res) => {
+  try {
+    const { refreshToken } = req.body;
+    if (!refreshToken)
+      return res.status(401).json({ message: "No refresh token" });
+
+    const user = await User.findOne({ refreshToken });
+    if (!user)
+      return res.status(403).json({ message: "Invalid refresh token" });
+
+    jwt.verify(refreshToken, process.env.REFRESH_SECRET, (err) => {
+      if (err)
+        return res.status(403).json({ message: "Refresh token expired" });
+
+      const newAccessToken = jwt.sign(
+        { userId: user._id },
+        process.env.ACCESS_SECRET,
+        { expiresIn: "15m" }
+      );
+
+      res.json({ accessToken: newAccessToken });
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 const getMe = (req, res) => {
   console.log("getME", req.user);
   res.json(req.user);
@@ -139,4 +167,4 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { loginUser, registerUser, getMe, getUsers };
+module.exports = { loginUser, registerUser, getMe, getUsers, refreshToken };
