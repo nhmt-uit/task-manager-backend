@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
+const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const taskRoutes = require("./routes/taskRoutes");
 
@@ -11,15 +12,18 @@ connectDB();
 
 app.use(express.json());
 // app.use(cors());
-app.use(cors({
-  origin: [
-    "http://localhost:3000",
-    "https://taskmanagerfrontend-zeta.vercel.app"
-  ],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://taskmanagerfrontend-zeta.vercel.app",
+    ],
+    credentials: true,
+  })
+);
 
 // CONFIG ROUTES
+app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/tasks", taskRoutes);
 

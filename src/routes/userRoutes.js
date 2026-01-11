@@ -2,16 +2,11 @@ const express = require("express");
 const router = express.Router();
 
 const { protect } = require("../middleware/authMiddleware");
-const {
-  registerUser,
-  loginUser,
-  getMe,
-  refreshToken
-} = require("../controllers/userController");
+const { getMe } = require("../controllers/userController");
 
-router.post("/register", registerUser);
-router.post("/login", loginUser);
-router.post("/refresh-token", refreshToken);
+// router.post("/register", registerUser);
+// router.post("/login", loginUser);
+// router.post("/refresh-token", refreshToken);
 
 // ================================= //
 // Easy way to use "protect"
