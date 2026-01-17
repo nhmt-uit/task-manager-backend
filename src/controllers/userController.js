@@ -13,12 +13,15 @@ const getUsers = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
-    const { email } = req.query;
+    const { name, email } = req.query;
 
-    const query = { user: req.user._id };
+    const query = {};
 
     if (email) {
       query.email = { $regex: email, $options: "i" };
+    }
+    if (name) {
+      query.name = { $regex: name, $options: "i" };
     }
 
     const [users, total] = await Promise.all([
@@ -41,6 +44,28 @@ const getUsers = async (req, res) => {
   }
 };
 
+const createUser = async (req, res) => {
+  const { name, email, password, role } = req.body;
+
+  const existed = await User.findOne({ email });
+  if (existed) {
+    return res.status(409).json({
+      message: "Email already exists",
+    });
+  }
+
+  const hashed = await bcrypt.hash(password, 10);
+
+  const user = await User.create({
+    name,
+    email,
+    password: hashed,
+    role,
+  });
+
+  res.status(201).json(user);
+};
+
 const updateUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -49,12 +74,11 @@ const updateUser = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    user.title = req.body.title ?? user.title;
-    user.description = req.body.description ?? user.description;
-    user.status = req.body.status ?? user.status;
+    user.name = req.body.name ?? user.name;
+    user.role = req.body.role ?? user.role;
 
-    const updatedTask = await user.save();
-    res.json(updatedTask);
+    const updatedUser = await user.save();
+    res.json(updatedUser);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -73,4 +97,4 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { getMe, getUsers };
+module.exports = { getMe, getUsers, createUser, updateUser, deleteUser };

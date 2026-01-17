@@ -64,10 +64,12 @@ const loginUser = async (req, res) => {
       await user.save();
 
       return res.json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
         accessToken: generateAccessToken({ userId: user._id, role: user.role }),
         refreshToken,
       });
@@ -84,14 +86,11 @@ const logoutUser = async (req, res) => {
   try {
     const { refreshToken } = req.body;
 
-  if (refreshToken) {
-    await User.findOneAndUpdate(
-      { refreshToken },
-      { refreshToken: null }
-    );
-  }
+    if (refreshToken) {
+      await User.findOneAndUpdate({ refreshToken }, { refreshToken: null });
+    }
 
-  res.json({ message: "Logged out" });
+    res.json({ message: "Logged out" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });

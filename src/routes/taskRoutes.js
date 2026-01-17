@@ -17,7 +17,7 @@ const router = express.Router();
 router.post("/", protect, createTask);
 router.get("/", protect, getTasks);
 router.put("/:id", protect, checkOwnership(Task), updateTask);
-router.patch("/:id/status", protect, checkOwnership(Task, 'user'), updateTaskStatus);
-router.delete("/:id", protect, checkOwnership(Task, 'user'), deleteTask);
+router.patch("/:id/status", protect, checkOwnership(Task, 'createdBy'), updateTaskStatus);
+router.delete("/:id", protect, checkOwnership(Task, 'createdBy'), deleteTask);
 
 module.exports = router;

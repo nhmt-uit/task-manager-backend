@@ -1,4 +1,4 @@
-const checkOwnership = (Model, ownerField = "user") => {
+const checkOwnership = (Model, ownerField = "createdBy") => {
   return async (req, res, next) => {
     try {
       const resource = await Model.findById(req.params.id);

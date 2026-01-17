@@ -9,7 +9,7 @@ const createTask = async (req, res) => {
     }
 
     const task = await Task.create({
-      user: req.user._id,
+      createdBy: req.user._id,
       title,
       description,
     });
@@ -23,21 +23,13 @@ const createTask = async (req, res) => {
 
 const getTasks = async (req, res) => {
   try {
-    // const tasks = await Task.find({ user: req.user._id })
-    //   .select("title status createdAt")
-    //   .sort({
-    //     createdAt: -1,
-    //   });
-
-    // res.json(tasks);
-
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
     const { status, keyword } = req.query;
 
-    const query = { user: req.user._id };
+    const query = { createdBy: req.user._id };
 
     if (status) {
       query.status = status;
@@ -46,8 +38,6 @@ const getTasks = async (req, res) => {
     if (keyword) {
       query.title = { $regex: keyword, $options: "i" };
     }
-
-    console.log("query", query)
 
     const [tasks, total] = await Promise.all([
       Task.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
@@ -115,6 +105,7 @@ const updateTaskStatus = async (req, res) => {
 
 const deleteTask = async (req, res) => {
   try {
+    console.log("req.resource", req.resource)
     const task = req.resource; // from checkOwnership middleware
 
     await task.deleteOne();

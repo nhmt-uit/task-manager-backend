@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const taskSchema = new mongoose.Schema(
   {
-    user: {
+    createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: "User",
@@ -18,6 +18,10 @@ const taskSchema = new mongoose.Schema(
       type: String,
       enum: ["todo", "doing", "done"],
       default: "todo",
+    },
+    assignedTo: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
   },
   {
