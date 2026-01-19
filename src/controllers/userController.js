@@ -17,11 +17,12 @@ const getUsers = async (req, res) => {
 
     const query = {};
 
-    if (email) {
-      query.email = { $regex: email, $options: "i" };
-    }
-    if (name) {
-      query.name = { $regex: name, $options: "i" };
+    // Use text search instead of regex for better performance
+    if (email || name) {
+      const searchTerms = [];
+      if (email) searchTerms.push(email);
+      if (name) searchTerms.push(name);
+      query.$text = { $search: searchTerms.join(' ') };
     }
 
     const [users, total] = await Promise.all([

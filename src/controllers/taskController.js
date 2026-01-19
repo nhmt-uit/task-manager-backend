@@ -36,11 +36,16 @@ const getTasks = async (req, res) => {
     }
 
     if (keyword) {
-      query.title = { $regex: keyword, $options: "i" };
+      query.$text = { $search: keyword }; // Use text index instead of regex
     }
 
     const [tasks, total] = await Promise.all([
-      Task.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      // Task.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit)
+      Task.find(query)
+        .populate('assignedTo', 'name email') // Populate assigned user data
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
       Task.countDocuments(query),
     ]);
 
