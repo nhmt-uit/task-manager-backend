@@ -29,7 +29,21 @@ const getTasks = async (req, res) => {
 
     const { status, keyword } = req.query;
 
-    const query = { createdBy: req.user._id };
+    let query = {};
+
+    // Admin can see all tasks, members can see tasks they created or are assigned to
+    if (req.user.role === "admin") {
+      // Admins see all tasks
+      query = {};
+    } else {
+      // Members see tasks they created OR tasks assigned to them
+      query = {
+        $or: [
+          { createdBy: req.user._id },
+          { assignedTo: req.user._id }
+        ]
+      };
+    }
 
     if (status) {
       query.status = status;
@@ -108,6 +122,31 @@ const updateTaskStatus = async (req, res) => {
   }
 };
 
+const assignTask = async (req, res) => {
+  try {
+    const { assignedTo } = req.body;
+
+    const task = await Task.findById(req.params.id);
+
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    // If assignedTo is null, unassign the task
+    // If assignedTo is a user ID, assign to that user
+    task.assignedTo = assignedTo || null;
+    const updatedTask = await task.save();
+
+    // Populate the assigned user data for the response
+    await updatedTask.populate('assignedTo', 'name email');
+
+    res.json(updatedTask);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 const deleteTask = async (req, res) => {
   try {
     console.log("req.resource", req.resource)
@@ -126,5 +165,6 @@ module.exports = {
   getTasks,
   updateTask,
   updateTaskStatus,
+  assignTask,
   deleteTask,
 };
