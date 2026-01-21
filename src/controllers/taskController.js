@@ -10,6 +10,7 @@ const createTask = async (req, res) => {
 
     const task = await Task.create({
       createdBy: req.user._id,
+      assignedTo: req.user.role === "admin" ? null : req.user._id, // Only auto-assign for members, not admins
       title,
       description,
     });
@@ -31,17 +32,14 @@ const getTasks = async (req, res) => {
 
     let query = {};
 
-    // Admin can see all tasks, members can see tasks they created or are assigned to
+    // Admin can see all tasks, members can see only tasks assigned to them
     if (req.user.role === "admin") {
-      // Admins see all tasks
+      // Admins see all tasks (assigned or unassigned) for management
       query = {};
     } else {
-      // Members see tasks they created OR tasks assigned to them
+      // Members see only tasks assigned to them (their responsibility)
       query = {
-        $or: [
-          { createdBy: req.user._id },
-          { assignedTo: req.user._id }
-        ]
+        assignedTo: req.user._id
       };
     }
 
@@ -149,7 +147,6 @@ const assignTask = async (req, res) => {
 
 const deleteTask = async (req, res) => {
   try {
-    console.log("req.resource", req.resource)
     const task = req.resource; // from checkOwnership middleware
 
     await task.deleteOne();

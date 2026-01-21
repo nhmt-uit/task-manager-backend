@@ -88,9 +88,9 @@ const updateUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   try {
-    const user = req.resource; // from checkOwnership middleware
-
-    await user.deleteOne();
+    const user = req.params; 
+    await User.findByIdAndDelete(user.id);
+    
     res.status(204).send(); // No need body
   } catch (error) {
     console.error(error);
